@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop-Weed Detection System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .form-container {
+            padding: 40px 30px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px 0;
+            cursor: pointer;
+            font-weight: 600;
+            color: #777;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: #4CAF50;
+            border-bottom: 3px solid #4CAF50;
+        }
+
+        .form {
+            display: none;
+        }
+
+        .form.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #4CAF50;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        .message {
+            margin-top: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .message a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .message a:hover {
+            text-decoration: underline;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo h1 {
+            color: #4CAF50;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .error {
+            color: #f44336;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success {
+            color: #4CAF50;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <div class="logo">
+                <h1>Crop-Weed Detection</h1>
+                <p>AI-powered agricultural solution</p>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" onclick="showForm('login')">Login</div>
+                <div class="tab" onclick="showForm('register')">Register</div>
+            </div>
+            
+            <form id="login-form" class="form active">
+                <h2>Login to Your Account</h2>
+                <div class="input-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" placeholder="Enter your email" required>
+                    <div class="error" id="login-email-error">Please enter a valid email</div>
+                </div>
+                <div class="input-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="Enter your password" required>
+                    <div class="error" id="login-password-error">Password is required</div>
+                </div>
+                <button type="button" class="btn" onclick="login()">Login</button>
+                <div class="message">
+                    Don't have an account? <a href="#" onclick="showForm('register')">Register here</a>
+                </div>
+                <div class="success" id="login-success">Login successful! Redirecting...</div>
+            </form>
+            
+            <form id="register-form" class="form">
+                <h2>Create New Account</h2>
+                <div class="input-group">
+                    <label for="register-username">Username</label>
+                    <input type="text" id="register-username" placeholder="Choose a username" required>
+                    <div class="error" id="register-username-error">Username is required</div>
+                </div>
+                <div class="input-group">
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" placeholder="Enter your email" required>
+                    <div class="error" id="register-email-error">Please enter a valid email</div>
+                </div>
+                <div class="input-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" placeholder="Create a password" required>
+                    <div class="error" id="register-password-error">Password must be at least 6 characters</div>
+                </div>
+                <button type="button" class="btn" onclick="register()">Register</button>
+                <div class="message">
+                    Already have an account? <a href="#" onclick="showForm('login')">Login here</a>
+                </div>
+                <div class="success" id="register-success">Registration successful! You can now login.</div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showForm(formType) {
+            // Hide all forms
+            document.querySelectorAll('.form').forEach(form => {
+                form.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected form and activate corresponding tab
+            document.getElementById(`${formType}-form`).classList.add('active');
+            document.querySelector(`.tab:nth-child(${formType === 'login' ? 1 : 2})`).classList.add('active');
+            
+            // Clear messages
+            document.querySelectorAll('.error, .success').forEach(el => {
+                el.style.display = 'none';
+            });
+        }
+
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            let isValid = true;
+            
+            // Clear previous errors
+            document.querySelectorAll('#login-form .error').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Validate email
+            if (!email || !validateEmail(email)) {
+                document.getElementById('login-email-error').style.display = 'block';
+                isValid = false;
+            }
+            
+            // Validate password
+            if (!password) {
+                document.getElementById('login-password-error').style.display = 'block';
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // In a real application, you would send this data to your backend
+                console.log('Login attempt with:', { email, password });
+                
+                // Show success message
+                document.getElementById('login-success').style.display = 'block';
+                
+                // In a real application, you would redirect to the main application
+                // setTimeout(() => {
+                //     window.location.href = 'dashboard.html';
+                // }, 1500);
+            }
+        }
+
+        function register() {
+            const username = document.getElementById('register-username').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            let isValid = true;
+            
+            // Clear previous errors
+            document.querySelectorAll('#register-form .error').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Validate username
+            if (!username) {
+                document.getElementById('register-username-error').style.display = 'block';
+                isValid = false;
+            }
+            
+            // Validate email
+            if (!email || !validateEmail(email)) {
+                document.getElementById('register-email-error').style.display = 'block';
+                isValid = false;
+            }
+            
+            // Validate password
+            if (!password || password.length < 6) {
+                document.getElementById('register-password-error').style.display = 'block';
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // In a real application, you would send this data to your backend
+                console.log('Registration attempt with:', { username, email, password });
+                
+                // Show success message
+                document.getElementById('register-success').style.display = 'block';
+                
+                // Clear form
+                document.getElementById('register-username').value = '';
+                document.getElementById('register-email').value = '';
+                document.getElementById('register-password').value = '';
+                
+                // Switch to login form after a delay
+                setTimeout(() => {
+                    showForm('login');
+                }, 2000);
+            }
+        }
+
+        // Allow form submission with Enter key
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const activeForm = document.querySelector('.form.active');
+                if (activeForm.id === 'login-form') {
+                    login();
+                } else if (activeForm.id === 'register-form') {
+                    register();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

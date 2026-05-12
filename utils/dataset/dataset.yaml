@@ -1,0 +1,10 @@
+path: C:\Users\laksh\Desktop\crop-weed-detection\dataset
+train: train/images
+val: valid/images
+test: test/images
+
+# Number of classes
+nc: 2
+
+# Class names
+names: ['crop', 'weed']
